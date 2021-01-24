@@ -3,6 +3,7 @@
 GoogleColabを新規で開くとき
 
 -レポシトリをクローンする
+
 ```!git clone https://[username]:[passsword]@github.com/lee4205/Potato_Chip_Classification.git```
 
 -ユーザ名とメールの設定
