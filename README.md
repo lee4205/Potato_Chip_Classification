@@ -3,14 +3,11 @@
 GoogleColabを新規で開くとき
 
 -レポシトリをクローンする
-
-!git clone https://[username]:[passsword]@github.com/lee4205/Potato_Chip_Classification.git
+```!git clone https://[username]:[passsword]@github.com/lee4205/Potato_Chip_Classification.git```
 
 -ユーザ名とメールの設定
-
-
-!git config --global user.email "[email@gmail.com]"
-!git config --global user.name "[username]"
+```!git config --global user.email "[email@gmail.com]"```
+```!git config --global user.name "[username]"```
 -ワークスペースに移動する
 cd [Potato_Chip_Classificationのパス]
 -最新の変更をプール
