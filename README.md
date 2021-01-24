@@ -2,29 +2,29 @@
 
 GoogleColabを新規で開くとき
 
-*レポシトリをクローンする
+* レポシトリをクローンする
 
 ```!git clone https://[username]:[passsword]@github.com/lee4205/Potato_Chip_Classification.git```
 
-*ユーザ名とメールの設定
+* ユーザ名とメールの設定
 
 ```!git config --global user.email "[email@gmail.com]"```
 
 ```!git config --global user.name "[username]"```
 
-*ワークスペースに移動する
+* ワークスペースに移動する
 
 ```cd [Potato_Chip_Classificationのパス]```
 
-*最新の変更をプール
+* 最新の変更をプール
 
 ```!git pull origin master```
 
-*ブランチの作成（できたら、スキップ)
+* ブランチの作成（できたら、スキップ)
 
 ```!git branch [ブランチ名]```
 
-*ブランチの切り替え
+* ブランチの切り替え
 
 ```!git checkout [ブランチ名]```
 
@@ -32,15 +32,15 @@ GoogleColabを新規で開くとき
 
 作業終わったら
 
-*ファイルを追加
+* ファイルを追加
 
 ```!git add [ファイル名]```
 
-*commitのメッセージを書く
+* commitのメッセージを書く
 
 ```!git commit -m "[commitのメッセージ]"```
 
-*変更をgitにプッシュする
+* 変更をgitにプッシュする
 
 ```!git push origin [ブランチ名]```
 
