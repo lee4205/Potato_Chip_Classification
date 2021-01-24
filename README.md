@@ -2,7 +2,7 @@
 
 GoogleColabを新規で開くとき
 
-* レポシトリをクローンする
+* レポシトリをクローンする（ファイルが入ったら、スキップ）
 
 ```!git clone https://[username]:[passsword]@github.com/lee4205/Potato_Chip_Classification.git```
 
@@ -20,7 +20,7 @@ GoogleColabを新規で開くとき
 
 ```!git pull origin master```
 
-* ブランチの作成（できたら、スキップ)
+* ブランチの作成（ブランチができたら、スキップ)
 
 ```!git branch [ブランチ名]```
 
@@ -47,17 +47,31 @@ GoogleColabを新規で開くとき
 ～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～
 
 役に立つコマンド
--変更を行う前の状態に戻す
-!git checkout .
--全部に戻す
-!git reset --hard
--commitとaddの取り消し
-!git reset --mixed
--commitのみ取り消し
-!git reset --soft
--変更の状態を確認する
-!git status
--ログを見る
-!git log
--ワークスペースにある全部のファイルをリストする
-ls
+
+* 変更を行う前の状態に戻す
+
+```!git checkout .```
+
+* 全部に戻す
+
+```!git reset --hard```
+
+* commitとaddの取り消し
+
+```!git reset --mixed```
+
+* commitのみ取り消し
+
+```!git reset --soft```
+
+* 変更の状態を確認する
+
+```!git status```
+
+* ログを見る
+
+```!git log```
+
+* ワークスペースにある全部のファイルをリストする
+
+```ls```
