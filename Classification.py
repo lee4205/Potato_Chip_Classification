@@ -44,4 +44,5 @@ for flavor in flavors:
     # 各味の画像ファイルを学習用データセットファイルにコピーする
     !cp $cwd//potato-chips/$flavor/*.jpg $cwd/dataset
 # pandasを持ちてデータフレームの作成
-df = pd.DataFrame({'filename' : filename, 'taste' : taste})
+df = pd.DataFrame({"filename" : filename, "taste" : taste})
+# --------------------------------------------------------------------------------------------
