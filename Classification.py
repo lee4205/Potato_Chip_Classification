@@ -20,19 +20,14 @@ IMAGE_SIZE=(IMAGE_WIDTH, IMAGE_HEIGHT)
 IMAGE_CHANNELS=3
 
 # 学習データの準備
-flavor_type = 0
-flavor_img = []
-img_dir = []
-flavor = []
-potato_file = os.listdir("/content/Potato_Chip_Classification/potato-chips")
-!mkdir /content/Potato_Chip_Classification/potato_img
-for flavor_file in potato_file:
-    flavor_dir = os.listdir(f"/content/Potato_Chip_Classification/potato-chips/{flavor_file}")
-    for potato_img in flavor_dir:
-      img_dir.append(flavor_file)
-      flavor_img.append(potato_img)
-      flavor.append(flavor_type)
-    !cp /content/Potato_Chip_Classification/potato-chips/$flavor_file/*.jpg /content/Potato_Chip_Classification/potato_img/
-    flavor_type += 1
-df = pd.DataFrame({'filename' : flavor_img, 'flavor' : img_dir, 'category' : flavor})
+filename = []
+taste = []
+flavors = os.listdir("/content/Potato_Chip_Classification/potato-chips")
+for flavor in flavors:
+    images = os.listdir(f"/content/Potato_Chip_Classification/potato-chips/{flavor}")
+    for image in images:
+      taste.append(flavor)
+      filename.append(image)
+    !cp /content/Potato_Chip_Classification/potato-chips/$flavor/*.jpg /content/Potato_Chip_Classification/dataset/
+df = pd.DataFrame({'filename' : filename, 'taste' : taste})
 df.to_csv('/content/Potato_Chip_Classification/potato_img.csv')
