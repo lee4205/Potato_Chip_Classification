@@ -46,3 +46,14 @@ for flavor in flavors:
 # pandasを持ちてデータフレームの作成
 df = pd.DataFrame({"filename" : filename, "taste" : taste})
 # --------------------------------------------------------------------------------------------
+# 解析オプション
+# --------------------------------------------------------------------------------------------
+# 味の選択
+analysis = input("以下の味を1つ選択して入力する\n\
+consomme-punch, kyusyu-shoyu, norishio, norishio-punch, shiawase-butter, shoyu-mayo, usushio\n")
+# 選択した味以外、全部0に与える
+flavor_data = dict.fromkeys(flavors, 0)
+flavor_data.update({analysis: 1})
+# データフレームのデータを書き換える
+df["taste"] = df["taste"].replace(flavor_data) 
+# --------------------------------------------------------------------------------------------
