@@ -23,9 +23,6 @@
 # ワークスペースに移動する
 cd [Potato_Chip_Classificationのパス]
 
-# masterブランチからプールする
-!git pull origin master
-
 # 作業ブランチを作成する
 !git branch [ブランチ名]
 
@@ -33,3 +30,8 @@ cd [Potato_Chip_Classificationのパス]
 !git checkout [ブランチ名]
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+
+
+
+# masterブランチからプールする
+!git pull origin master
