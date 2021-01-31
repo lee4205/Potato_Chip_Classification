@@ -46,3 +46,28 @@ import random
 import os
 
 # 
+FAST_RUN = False
+IMAGE_WIDTH=960
+IMAGE_HEIGHT=1280
+IMAGE_SIZE=(IMAGE_WIDTH, IMAGE_HEIGHT)
+IMAGE_CHANNELS=3
+
+#
+flavor_type = 0
+flavor_img = []
+img_dir = []
+flavor = []
+potato_file = os.listdir("/content/Potato_Chip_Classification/potato-chips")
+print(potato_file)
+!mkdir /content/Potato_Chip_Classification/potato_img
+for flavor_file in potato_file:
+    flavor_dir = os.listdir(f"/content/Potato_Chip_Classification/potato-chips/{flavor_file}")
+    for potato_img in flavor_dir:
+      img_dir.append(flavor_file)
+      flavor_img.append(potato_img)
+      flavor.append(flavor_type)
+    !cp /content/Potato_Chip_Classification/potato-chips/$flavor_file/*.jpg /content/Potato_Chip_Classification/potato_img/
+    flavor_type += 1
+filenames = os.listdir("/content/Potato_Chip_Classification/potato_img")
+df = pd.DataFrame({'filename' : flavor_img, 'flavor' : img_dir, 'category' : flavor})
+df.to_csv('/content/Potato_Chip_Classification/potato_img.csv')
