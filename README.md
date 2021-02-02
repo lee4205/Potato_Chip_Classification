@@ -12,13 +12,7 @@ Potato_Chip_Classification へようこそ！
 
 ～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～
 
-Welcome to Potato_Chip_Classification !
-
-I will post assignment's code here.
-
-If there is anything wrong with the code, please let me know through Issues.
-
-Looking forward to work with you.
+# 流れ
 
 ～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～
 
