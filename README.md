@@ -8,7 +8,7 @@ Potato_Chip_Classification へようこそ！
 
 よろしくお願いします。
 
-# 流れ
+# プログラミング流れ
 
 
 
