@@ -53,7 +53,8 @@ df = pd.DataFrame({"filename" : filename, "taste" : taste})
 # --------------------------------------------------------------------------------------------
 # 味の選択
 analyse = input("以下の味を1つ選択して入力する\n\
-consomme-punch, kyusyu-shoyu, norishio, norishio-punch, shiawase-butter, shoyu-mayo, usushio\n")
+consomme-punch, kyusyu-shoyu, norishio, norishio-punch, shiawase-butter, shoyu-mayo, usushio\n\
+選択した味：")
 # 選択した味以外、全部0に与える
 flavor_data = dict.fromkeys(flavors, 0)
 flavor_data.update({analyse: 1})
