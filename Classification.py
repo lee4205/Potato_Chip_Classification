@@ -12,23 +12,25 @@ from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import seaborn as sb
+import subprocess
 import random
 import os
 # --------------------------------------------------------------------------------------------
 # 定数の定義
 # --------------------------------------------------------------------------------------------
 FAST_RUN = False
-IMAGE_WIDTH=960
-IMAGE_HEIGHT=1280
-IMAGE_SIZE=(IMAGE_WIDTH, IMAGE_HEIGHT)
-IMAGE_CHANNELS=3
+IMAGE_WIDTH = 960
+IMAGE_HEIGHT = 1280
+IMAGE_SIZE = (IMAGE_WIDTH, IMAGE_HEIGHT)
+IMAGE_CHANNELS = 3
 # --------------------------------------------------------------------------------------------
 # 学習データの準備
 # --------------------------------------------------------------------------------------------
 # 現在ワークスペースのディレクトリを設定する
 cwd = os.getcwd()
-# 学習用データセットファイルの作成
-!mkdir $cwd/dataset
+# 学習用データセットフォルダの作成
+# !mkdir $cwd/dataset
+subprocess.run(["mkdir " + cwd + "/dataset"], shell=True)
 # 2つのパラメータを設定する
 filename = []
 taste = []
@@ -42,18 +44,19 @@ for flavor in flavors:
         taste.append(flavor)
         filename.append(image)
     # 各味の画像ファイルを学習用データセットファイルにコピーする
-    !cp $cwd//potato-chips/$flavor/*.jpg $cwd/dataset
+    # !cp $cwd/potato-chips/$flavor/*.jpg $cwd/dataset
+    subprocess.run(["cp " + cwd + "/potato-chips/" + flavor + "/*.jpg " + cwd + "/dataset"], shell=True)
 # pandasを持ちてデータフレームの作成
 df = pd.DataFrame({"filename" : filename, "taste" : taste})
 # --------------------------------------------------------------------------------------------
 # 解析オプション
 # --------------------------------------------------------------------------------------------
 # 味の選択
-analysis = input("以下の味を1つ選択して入力する\n\
+analyse = input("以下の味を1つ選択して入力する\n\
 consomme-punch, kyusyu-shoyu, norishio, norishio-punch, shiawase-butter, shoyu-mayo, usushio\n")
 # 選択した味以外、全部0に与える
 flavor_data = dict.fromkeys(flavors, 0)
-flavor_data.update({analysis: 1})
+flavor_data.update({analyse: 1})
 # データフレームのデータを書き換える
 df["taste"] = df["taste"].replace(flavor_data) 
 # --------------------------------------------------------------------------------------------
