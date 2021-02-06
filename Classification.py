@@ -14,18 +14,18 @@ from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activati
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-import seaborn as sb
 import subprocess
 import random
 import os
 # デバッグ用
-pd.set_option('display.max_rows', None)
+pd.set_option("display.max_rows", None)
 # --------------------------------------------------------------------------------------------
 # 定数の定義
 # --------------------------------------------------------------------------------------------
 FAST_RUN = False
-IMAGE_WIDTH = 480 #960
-IMAGE_HEIGHT = 640 #1280
+# 元画像サイズは 960*1280
+IMAGE_WIDTH = 480
+IMAGE_HEIGHT = 640
 IMAGE_SIZE = (IMAGE_WIDTH, IMAGE_HEIGHT)
 IMAGE_CHANNELS = 3
 # --------------------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ model.add(BatchNormalization())
 model.add(Dropout(0.5))
 model.add(Dense(2, activation="softmax"))
 # モデルをまとめる
-model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+model.compile(loss="categorical_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
 # モデルの詳細
 model.summary()
 # --------------------------------------------------------------------------------------------
@@ -108,10 +108,10 @@ model.summary()
 # 過学習を防ぐために，10エポック後に学習を停止し，val_lossの値を減らさないようにする
 earlystop = EarlyStopping(patience=10)
 # 2エポック後に精度が上がらない場合，学習率を下げる
-learning_rate_reduction = ReduceLROnPlateau(monitor='val_accuracy', 	
+learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy", 	
                                             patience=2, 	
                                             verbose=1, 	
-                                            factor=0.8, 	
+                                            factor=0.3, 	
                                             min_lr=0.0001)	
 # 関数の呼び出す
 callbacks = [earlystop]
