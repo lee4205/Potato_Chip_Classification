@@ -56,7 +56,7 @@ df = pd.DataFrame({"filename" : filename, "taste" : taste})
 # デバッグ用
 print(df)
 print(df.shape)
-df['taste'].value_counts().plot.bar()
+df["taste"].value_counts().plot.bar()
 # --------------------------------------------------------------------------------------------
 # 解析オプション
 # --------------------------------------------------------------------------------------------
@@ -72,32 +72,32 @@ df["taste"] = df["taste"].replace(flavor_data)
 # デバッグ用
 print(df)
 print(df.shape)
-df['taste'].value_counts().plot.bar()
+df["taste"].value_counts().plot.bar()
 # --------------------------------------------------------------------------------------------
 # モデル作成
 # --------------------------------------------------------------------------------------------
 model = Sequential()
 
-model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
+model.add(Conv2D(32, (3, 3), activation="relu", input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
 model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
-model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(Conv2D(64, (3, 3), activation="relu"))
 model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
-model.add(Conv2D(128, (3, 3), activation='relu'))
+model.add(Conv2D(128, (3, 3), activation="relu"))
 model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
 model.add(Flatten())
-model.add(Dense(512, activation='relu'))
+model.add(Dense(512, activation="relu"))
 model.add(BatchNormalization())
 model.add(Dropout(0.5))
-model.add(Dense(2, activation='softmax'))
+model.add(Dense(2, activation="softmax"))
 # モデルをまとめる
 model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 # モデルの詳細
@@ -107,21 +107,31 @@ model.summary()
 # --------------------------------------------------------------------------------------------
 # 過学習を防ぐために，10エポック後に学習を停止し，val_lossの値を減らさないようにする
 earlystop = EarlyStopping(patience=10)
+# 2エポック後に精度が上がらない場合，学習率を下げる
+learning_rate_reduction = ReduceLROnPlateau(monitor='val_accuracy', 	
+                                            patience=2, 	
+                                            verbose=1, 	
+                                            factor=0.8, 	
+                                            min_lr=0.0001)	
 # 関数の呼び出す
 callbacks = [earlystop]
 # --------------------------------------------------------------------------------------------
 # 学習と検証用のデータ準備
 # --------------------------------------------------------------------------------------------
 df["taste"] = df["taste"].replace({0: "others", 1: analyse}) 
-train_df, validate_df = train_test_split(df, test_size=0.20, random_state=42)
+train_df, validate_df = train_test_split(df, train_size=0.6, random_state=42)
+validate_df, test_df = train_test_split(validate_df, test_size=0.5, random_state=42)
 train_df = train_df.reset_index(drop=True)
 validate_df = validate_df.reset_index(drop=True)
+test_df = test_df.reset_index(drop=True)
 total_train = train_df.shape[0]
 total_validate = validate_df.shape[0]
-batch_size=25
+total_test = test_df.shape[0]
+batch_size = 25
 # デバッグ用
-train_df['taste'].value_counts().plot.bar()
-validate_df['taste'].value_counts().plot.bar()
+train_df["taste"].value_counts().plot.bar()
+validate_df["taste"].value_counts().plot.bar()
+test_df["taste"].value_counts().plot.bar()
 # --------------------------------------------------------------------------------------------
 # 学習の仕組み
 # --------------------------------------------------------------------------------------------
@@ -137,7 +147,7 @@ train_datagen = ImageDataGenerator(
 # 学習のやり方を定義する
 train_generator = train_datagen.flow_from_dataframe(
     train_df, 
-    cwd + "/dataset/", 
+    cwd+"/dataset/", 
     x_col="filename",
     y_col="taste",
     target_size=IMAGE_SIZE,
@@ -151,7 +161,7 @@ validation_datagen = ImageDataGenerator(rescale=1./255)
 # 検証のやり方を定義する
 validation_generator = validation_datagen.flow_from_dataframe(
     validate_df, 
-    cwd + "/dataset/", 
+    cwd+"/dataset/", 
     x_col="filename",
     y_col="taste",
     target_size=IMAGE_SIZE,
@@ -171,18 +181,35 @@ history = model.fit_generator(
     callbacks=callbacks)
 # モデルを保存する
 model.save_weights("model.h5")
-# 学習結果を出す
+# 学習結果をグラフに出す
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 12))
-ax1.plot(history.history['loss'], color='b', label="Training loss")
-ax1.plot(history.history['val_loss'], color='r', label="Validation loss")
+ax1.plot(history.history["loss"], color="b", label="Training loss")
+ax1.plot(history.history["val_loss"], color="r", label="Validation loss")
 ax1.set_xticks(np.arange(1, epochs, 1))
-ax1.set_yticks(np.arange(0, 1, 0.1))
-ax2.plot(history.history['acc'], color='b', label="Training accuracy")
-ax2.plot(history.history['val_acc'], color='r',label="Validation accuracy")
+ax2.plot(history.history["accuracy"], color="b", label="Training accuracy")
+ax2.plot(history.history["val_accuracy"], color="r",label="Validation accuracy")
 ax2.set_xticks(np.arange(1, epochs, 1))
-legend = plt.legend(loc='best', shadow=True)
+legend = plt.legend(loc="best", shadow=True)
 plt.tight_layout()
 plt.show()
+# --------------------------------------------------------------------------------------------
+# 推論の仕組み
+# --------------------------------------------------------------------------------------------
+test_datagen = ImageDataGenerator(rescale=1./255)
+test_generator = test_datagen.flow_from_dataframe(
+    test_df,
+    cwd+"/dataset/",
+    x_col="filename",
+    y_col=None,
+    class_mode=None,
+    target_size=IMAGE_SIZE,
+    batch_size=batch_size,
+    shuffle=True)
+predict = model.predict_generator(test_generator, steps=np.ceil(total_test/batch_size))
+test_df["taste"] = np.argmax(predict, axis=-1)
+label_map = dict((v,k) for k,v in train_generator.class_indices.items())
+test_df["taste"] = test_df["taste"].replace(label_map)
+test_df["taste"].value_counts().plot.bar()
 # --------------------------------------------------------------------------------------------
 # サンプル用
 # --------------------------------------------------------------------------------------------
@@ -195,8 +222,8 @@ sample_df = train_df.sample(n=1).reset_index(drop=True)
 sample_generator = train_datagen.flow_from_dataframe(
     sample_df, 
     cwd + "/dataset/", 
-    x_col='filename',
-    y_col='taste',
+    x_col="filename",
+    y_col="taste",
     target_size=IMAGE_SIZE,
     class_mode="categorical")
 for i in range(0, 15):
@@ -205,5 +232,18 @@ for i in range(0, 15):
         image = X_batch[0]
         plt.imshow(image)
         break
+plt.tight_layout()
+plt.show()
+# 結果の試し
+sample_test = test_df.head(8)
+sample_test.head()
+plt.figure(figsize=(12, 24))
+for index, row in sample_test.iterrows():
+    filename = row["filename"]
+    category = row["taste"]
+    img = load_img(cwd + "/dataset/" + filename, target_size=IMAGE_SIZE)
+    plt.subplot(6, 3, index + 1)
+    plt.imshow(img)
+    plt.xlabel(filename + '(' + "{}".format(category) + ')' )
 plt.tight_layout()
 plt.show()
