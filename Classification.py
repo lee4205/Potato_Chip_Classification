@@ -65,10 +65,10 @@ analyse = input("以下の味を1つ選択して入力する\n\
 consomme-punch, kyusyu-shoyu, norishio, norishio-punch, shiawase-butter, shoyu-mayo, usushio\n\
 選択した味：")
 # 選択した味以外、全部0に与える
-flavor_data = dict.fromkeys(flavors, 0)
-flavor_data.update({analyse: 1})
+new_taste = dict.fromkeys(flavors, 0)
+new_taste.update({analyse: 1})
 # データフレームのデータを書き換える
-df["taste"] = df["taste"].replace(flavor_data) 
+df["taste"] = df["taste"].replace(new_taste) 
 # デバッグ用
 print(df)
 print(df.shape)
@@ -183,15 +183,21 @@ history = model.fit_generator(
 # モデルを保存する
 model.save_weights("model.h5")
 # 学習結果をグラフに出す
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 12))
-ax1.plot(history.history["loss"], color="b", label="Training loss")
-ax1.plot(history.history["val_loss"], color="r", label="Validation loss")
-ax1.set_xticks(np.arange(1, epochs, 1))
-ax2.plot(history.history["accuracy"], color="b", label="Training accuracy")
-ax2.plot(history.history["val_accuracy"], color="r",label="Validation accuracy")
-ax2.set_xticks(np.arange(1, epochs, 1))
-legend = plt.legend(loc="best", shadow=True)
-plt.tight_layout()
+fig, axs = plt.subplots(1,2,figsize=(15,5))
+axs[0].plot(range(1,len(history.history["accuracy"])+1),history.history["accuracy"])
+axs[0].plot(range(1,len(history.history["val_accuracy"])+1),history.history["val_accuracy"])
+axs[0].set_title("Model Accuracy")
+axs[0].set_ylabel("Accuracy")
+axs[0].set_xlabel("Epoch")
+axs[0].set_xticks(np.arange(1,len(history.history["accuracy"])+1),len(history.history["accuracy"])/10)
+axs[0].legend(["train", "val"], loc="best")
+axs[1].plot(range(1,len(history.history["loss"])+1),history.history["loss"])
+axs[1].plot(range(1,len(history.history["val_loss"])+1),history.history["val_loss"])
+axs[1].set_title("Model Loss")
+axs[1].set_ylabel("Loss")
+axs[1].set_xlabel("Epoch")
+axs[1].set_xticks(np.arange(1,len(history.history["loss"])+1),len(history.history["loss"])/10)
+axs[1].legend(["train", "val"], loc="best")
 plt.show()
 # --------------------------------------------------------------------------------------------
 # 推論の仕組み
