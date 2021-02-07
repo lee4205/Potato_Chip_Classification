@@ -100,7 +100,7 @@ model.add(Dropout(0.5))
 model.add(Dense(2, activation="softmax"))
 # モデルをまとめる
 model.compile(loss="categorical_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
-# モデルの詳細
+# デバッグ用
 model.summary()
 # --------------------------------------------------------------------------------------------
 # 過学習の場合
@@ -114,7 +114,7 @@ learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy",
                                             factor=0.3, 	
                                             min_lr=0.0001)	
 # 関数の呼び出す
-callbacks = [earlystop]
+callbacks = [earlystop, learning_rate_reduction]
 # --------------------------------------------------------------------------------------------
 # 学習と検証用のデータ準備
 # --------------------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ test_df = test_df.reset_index(drop=True)
 total_train = train_df.shape[0]
 total_validate = validate_df.shape[0]
 total_test = test_df.shape[0]
-batch_size = 25
+batch_size = 15
 # デバッグ用
 train_df["taste"].value_counts().plot.bar()
 validate_df["taste"].value_counts().plot.bar()
@@ -142,6 +142,7 @@ train_datagen = ImageDataGenerator(
     shear_range=0.1,
     zoom_range=0.2,
     horizontal_flip=True,
+    fill_mode="nearest",
     width_shift_range=0.1,
     height_shift_range=0.1)
 # 学習のやり方を定義する
@@ -226,8 +227,9 @@ sample_generator = train_datagen.flow_from_dataframe(
     y_col="taste",
     target_size=IMAGE_SIZE,
     class_mode="categorical")
-for i in range(0, 15):
-    plt.subplot(5, 3, i+1)
+plt.figure(figsize=(12, 12))
+for i in range(0, 9):
+    plt.subplot(3, 3, i+1)
     for X_batch, Y_batch in sample_generator:
         image = X_batch[0]
         plt.imshow(image)
