@@ -24,8 +24,8 @@ pd.set_option("display.max_rows", None)
 # --------------------------------------------------------------------------------------------
 FAST_RUN = False
 # 元画像サイズは 960*1280
-IMAGE_WIDTH = 480
-IMAGE_HEIGHT = 640
+IMAGE_WIDTH = 120 #960
+IMAGE_HEIGHT = 160 #1280
 IMAGE_SIZE = (IMAGE_WIDTH, IMAGE_HEIGHT)
 IMAGE_CHANNELS = 3
 # --------------------------------------------------------------------------------------------
