@@ -14,11 +14,13 @@ from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activati
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+import seaborn as sns
 import subprocess
 import random
 import os
-# デバッグ用
+# ～～～デバッグ～～～
 pd.set_option("display.max_rows", None)
+# ～～～～～～～～～～
 # --------------------------------------------------------------------------------------------
 # 定数の定義
 # --------------------------------------------------------------------------------------------
@@ -53,55 +55,41 @@ for flavor in flavors:
     subprocess.run(["cp " + cwd + "/potato-chips/" + flavor + "/*.jpg " + cwd + "/dataset"], shell=True)
 # pandasを持ちてデータフレームの作成
 df = pd.DataFrame({"filename" : filename, "taste" : taste})
-# デバッグ用
+# ～～～デバッグ～～～
 print(df)
 print(df.shape)
 df["taste"].value_counts().plot.bar()
-# --------------------------------------------------------------------------------------------
-# 解析オプション
-# --------------------------------------------------------------------------------------------
-# 味の選択
-analyse = input("以下の味を1つ選択して入力する\n\
-consomme-punch, kyusyu-shoyu, norishio, norishio-punch, shiawase-butter, shoyu-mayo, usushio\n\
-選択した味：")
-# 選択した味以外、全部0に与える
-new_taste = dict.fromkeys(flavors, 0)
-new_taste.update({analyse: 1})
-# データフレームのデータを書き換える
-df["taste"] = df["taste"].replace(new_taste) 
-# デバッグ用
-print(df)
-print(df.shape)
-df["taste"].value_counts().plot.bar()
+# ～～～～～～～～～～
 # --------------------------------------------------------------------------------------------
 # モデル作成
 # --------------------------------------------------------------------------------------------
 model = Sequential()
 
-model.add(Conv2D(32, (3, 3), activation="relu", input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
+model.add(Conv2D(filters=32, kernel_size=(3, 3), activation="relu", input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
 model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
-model.add(Conv2D(64, (3, 3), activation="relu"))
+model.add(Conv2D(filters=64, kernel_size=(3, 3), activation="relu"))
 model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
-model.add(Conv2D(128, (3, 3), activation="relu"))
+model.add(Conv2D(filters=128, kernel_size=(3, 3), activation="relu"))
 model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
 model.add(Flatten())
-model.add(Dense(512, activation="relu"))
+model.add(Dense(units=512, activation="relu"))
 model.add(BatchNormalization())
 model.add(Dropout(0.5))
 model.add(Dense(2, activation="softmax"))
 # モデルをまとめる
 model.compile(loss="categorical_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
-# デバッグ用
+# ～～～デバッグ～～～
 model.summary()
+# ～～～～～～～～～～
 # --------------------------------------------------------------------------------------------
 # 過学習の場合
 # --------------------------------------------------------------------------------------------
@@ -116,11 +104,36 @@ learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy",
 # 関数の呼び出す
 callbacks = [earlystop, learning_rate_reduction]
 # --------------------------------------------------------------------------------------------
+# 解析オプション
+# --------------------------------------------------------------------------------------------
+# 味の選択
+analyse = input("以下の味を1つ選択して入力する\n\
+consomme-punch, kyusyu-shoyu, norishio, norishio-punch, shiawase-butter, shoyu-mayo, usushio\n\
+選択した味：")
+# 選択した味以外、全部0に与える
+new_taste = dict.fromkeys(flavors, 0)
+new_taste.update({analyse: 1})
+# --------------------------------------------------------------------------------------------
 # 学習と検証用のデータ準備
 # --------------------------------------------------------------------------------------------
-df["taste"] = df["taste"].replace({0: "others", 1: analyse}) 
 train_df, validate_df = train_test_split(df, train_size=0.6, random_state=42)
 validate_df, test_df = train_test_split(validate_df, test_size=0.5, random_state=42)
+# ～～～デバッグ～～～
+train_df["taste"].value_counts().plot.bar()
+validate_df["taste"].value_counts().plot.bar()
+test_df["taste"].value_counts().plot.bar()
+# ～～～～～～～～～～
+train_df["taste"] = train_df["taste"].replace(new_taste)
+train_df["taste"] = train_df["taste"].replace({0: "others", 1: analyse})
+validate_df["taste"] = validate_df["taste"].replace(new_taste)
+validate_df["taste"] = validate_df["taste"].replace({0: "others", 1: analyse})
+test_df["taste"] = test_df["taste"].replace(new_taste)
+test_df["taste"] = test_df["taste"].replace({0: "others", 1: analyse})
+# ～～～デバッグ～～～
+train_df["taste"].value_counts().plot.bar()
+validate_df["taste"].value_counts().plot.bar()
+test_df["taste"].value_counts().plot.bar()
+# ～～～～～～～～～～
 train_df = train_df.reset_index(drop=True)
 validate_df = validate_df.reset_index(drop=True)
 test_df = test_df.reset_index(drop=True)
@@ -128,10 +141,6 @@ total_train = train_df.shape[0]
 total_validate = validate_df.shape[0]
 total_test = test_df.shape[0]
 batch_size = 15
-# デバッグ用
-train_df["taste"].value_counts().plot.bar()
-validate_df["taste"].value_counts().plot.bar()
-test_df["taste"].value_counts().plot.bar()
 # --------------------------------------------------------------------------------------------
 # 学習の仕組み
 # --------------------------------------------------------------------------------------------
@@ -162,7 +171,7 @@ validation_datagen = ImageDataGenerator(rescale=1./255)
 # 検証のやり方を定義する
 validation_generator = validation_datagen.flow_from_dataframe(
     validate_df, 
-    cwd+"/dataset/", 
+    cwd + "/dataset/", 
     x_col="filename",
     y_col="taste",
     target_size=IMAGE_SIZE,
@@ -174,7 +183,7 @@ validation_generator = validation_datagen.flow_from_dataframe(
 # エポックを指定する
 epochs=10 if FAST_RUN else 50
 history = model.fit_generator(
-    train_generator, 
+    train_generator,
     epochs=epochs,
     validation_data=validation_generator,
     validation_steps=total_validate//batch_size,
@@ -212,7 +221,10 @@ test_generator = test_datagen.flow_from_dataframe(
     target_size=IMAGE_SIZE,
     batch_size=batch_size,
     shuffle=True)
-predict = model.predict_generator(test_generator, steps=np.ceil(total_test/batch_size))
+# --------------------------------------------------------------------------------------------
+# 推論
+# --------------------------------------------------------------------------------------------
+predict = model.predict(test_generator, steps=np.ceil(total_test/batch_size))
 test_df["taste"] = np.argmax(predict, axis=-1)
 label_map = dict((v,k) for k,v in train_generator.class_indices.items())
 test_df["taste"] = test_df["taste"].replace(label_map)
@@ -223,6 +235,7 @@ test_df["taste"].value_counts().plot.bar()
 # 写真の試し
 sample = random.choice(filename)
 sample_image = load_img(cwd + "/dataset/" + sample)
+print(sample)
 plt.imshow(sample_image)
 # 仕組みの試し
 sample_df = train_df.sample(n=1).reset_index(drop=True)
@@ -243,15 +256,15 @@ for i in range(0, 9):
 plt.tight_layout()
 plt.show()
 # 結果の試し
-sample_test = test_df.head(8)
+sample_test = test_df.head(25)
 sample_test.head()
-plt.figure(figsize=(12, 24))
+plt.figure(figsize=(24, 24))
 for index, row in sample_test.iterrows():
     filename = row["filename"]
     category = row["taste"]
     img = load_img(cwd + "/dataset/" + filename, target_size=IMAGE_SIZE)
-    plt.subplot(6, 3, index + 1)
+    plt.subplot(5, 5, index + 1)
     plt.imshow(img)
-    plt.xlabel(filename + '(' + "{}".format(category) + ')' )
+    plt.xlabel("{}".format(category) + "(" + filename + ")" )
 plt.tight_layout()
 plt.show()
