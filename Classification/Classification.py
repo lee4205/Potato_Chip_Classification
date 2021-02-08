@@ -42,8 +42,7 @@ df["taste"].value_counts().plot.bar()
 
 model = Sequential()
 
-model.add(
-    Conv2D(filters=32, kernel_size=(3, 3), activation="relu", input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
+model.add(Conv2D(filters=32, kernel_size=(3, 3), activation="relu", input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
 model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
@@ -69,7 +68,6 @@ model.compile(loss="categorical_crossentropy", optimizer="rmsprop", metrics=["ac
 # ～～～デバッグ～～～
 model.summary()
 # ～～～～～～～～～～
-
 
 earlystop = EarlyStopping(patience=10)
 learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy",

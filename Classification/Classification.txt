@@ -55,7 +55,7 @@ for flavor in flavors:
     # !cp $cwd/potato-chips/$flavor/*.jpg $cwd/dataset
     subprocess.run(["cp " + cwd + "/potato-chips/" + flavor + "/*.jpg " + cwd + "/dataset"], shell=True)
 # pandasを持ちてデータフレームの作成
-df = pd.DataFrame({"filename" : filename, "taste" : taste})
+df = pd.DataFrame({"filename": filename, "taste": taste})
 # ～～～デバッグ～～～
 print(df)
 print(df.shape)
@@ -97,11 +97,11 @@ model.summary()
 # 過学習を防ぐために，10エポック後に学習を停止し，val_lossの値を減らさないようにする
 earlystop = EarlyStopping(patience=10)
 # 2エポック後に精度が上がらない場合，学習率を下げる
-learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy", 	
-                                            patience=2, 	
-                                            verbose=1, 	
-                                            factor=0.3, 	
-                                            min_lr=0.0001)	
+learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy",
+                                            patience=2,
+                                            verbose=1,
+                                            factor=0.3,
+                                            min_lr=0.0001)
 # 関数の呼び出す
 callbacks = [earlystop, learning_rate_reduction]
 # --------------------------------------------------------------------------------------------
@@ -149,7 +149,7 @@ test_df["taste"].value_counts().plot.bar()
 # 学習用データを生成する
 train_datagen = ImageDataGenerator(
     rotation_range=15,
-    rescale=1./255,
+    rescale=1. / 255,
     shear_range=0.1,
     zoom_range=0.2,
     horizontal_flip=True,
@@ -158,8 +158,8 @@ train_datagen = ImageDataGenerator(
     height_shift_range=0.1)
 # 学習のやり方を定義する
 train_generator = train_datagen.flow_from_dataframe(
-    train_df, 
-    cwd+"/dataset/", 
+    train_df,
+    cwd + "/dataset/",
     x_col="filename",
     y_col="taste",
     target_size=IMAGE_SIZE,
@@ -169,11 +169,11 @@ train_generator = train_datagen.flow_from_dataframe(
 # 検証の仕組み
 # --------------------------------------------------------------------------------------------
 # 検証用データを生成する
-validation_datagen = ImageDataGenerator(rescale=1./255)
+validation_datagen = ImageDataGenerator(rescale=1. / 255)
 # 検証のやり方を定義する
 validation_generator = validation_datagen.flow_from_dataframe(
-    validate_df, 
-    cwd + "/dataset/", 
+    validate_df,
+    cwd + "/dataset/",
     x_col="filename",
     y_col="taste",
     target_size=IMAGE_SIZE,
@@ -183,40 +183,40 @@ validation_generator = validation_datagen.flow_from_dataframe(
 # モデルの適合
 # --------------------------------------------------------------------------------------------
 # エポックを指定する
-epochs=10 if FAST_RUN else 50
+epochs = 10 if FAST_RUN else 50
 history = model.fit_generator(
     train_generator,
     epochs=epochs,
     validation_data=validation_generator,
-    validation_steps=total_validate//batch_size,
-    steps_per_epoch=total_train//batch_size,
+    validation_steps=total_validate // batch_size,
+    steps_per_epoch=total_train // batch_size,
     callbacks=callbacks)
 # モデルを保存する
 model.save_weights("model.h5")
 # 学習結果をグラフに出す
-fig, axs = plt.subplots(1,2,figsize=(15,5))
-axs[0].plot(range(1,len(history.history["accuracy"])+1),history.history["accuracy"])
-axs[0].plot(range(1,len(history.history["val_accuracy"])+1),history.history["val_accuracy"])
+fig, axs = plt.subplots(1, 2, figsize=(15, 5))
+axs[0].plot(range(1, len(history.history["accuracy"]) + 1), history.history["accuracy"])
+axs[0].plot(range(1, len(history.history["val_accuracy"]) + 1), history.history["val_accuracy"])
 axs[0].set_title("Model Accuracy")
 axs[0].set_ylabel("Accuracy")
 axs[0].set_xlabel("Epoch")
-axs[0].set_xticks(np.arange(1,len(history.history["accuracy"])+1),len(history.history["accuracy"])/10)
+axs[0].set_xticks(np.arange(1, len(history.history["accuracy"]) + 1), len(history.history["accuracy"]) / 10)
 axs[0].legend(["train", "val"], loc="best")
-axs[1].plot(range(1,len(history.history["loss"])+1),history.history["loss"])
-axs[1].plot(range(1,len(history.history["val_loss"])+1),history.history["val_loss"])
+axs[1].plot(range(1, len(history.history["loss"]) + 1), history.history["loss"])
+axs[1].plot(range(1, len(history.history["val_loss"]) + 1), history.history["val_loss"])
 axs[1].set_title("Model Loss")
 axs[1].set_ylabel("Loss")
 axs[1].set_xlabel("Epoch")
-axs[1].set_xticks(np.arange(1,len(history.history["loss"])+1),len(history.history["loss"])/10)
+axs[1].set_xticks(np.arange(1, len(history.history["loss"]) + 1), len(history.history["loss"]) / 10)
 axs[1].legend(["train", "val"], loc="best")
 plt.show()
 # --------------------------------------------------------------------------------------------
 # 推論の仕組み
 # --------------------------------------------------------------------------------------------
-test_datagen = ImageDataGenerator(rescale=1./255)
+test_datagen = ImageDataGenerator(rescale=1. / 255)
 test_generator = test_datagen.flow_from_dataframe(
     test_df,
-    cwd+"/dataset/",
+    cwd + "/dataset/",
     x_col="filename",
     y_col=None,
     class_mode=None,
@@ -226,9 +226,9 @@ test_generator = test_datagen.flow_from_dataframe(
 # --------------------------------------------------------------------------------------------
 # 推論
 # --------------------------------------------------------------------------------------------
-predict = model.predict(test_generator, steps=np.ceil(total_test/batch_size))
+predict = model.predict(test_generator, steps=np.ceil(total_test / batch_size))
 test_df["taste"] = np.argmax(predict, axis=-1)
-label_map = dict((v,k) for k,v in train_generator.class_indices.items())
+label_map = dict((v, k) for k, v in train_generator.class_indices.items())
 test_df["taste"] = test_df["taste"].replace(label_map)
 test_df["taste"].value_counts().plot.bar()
 # --------------------------------------------------------------------------------------------
@@ -242,15 +242,15 @@ plt.imshow(sample_image)
 # 仕組みの試し
 sample_df = train_df.sample(n=1).reset_index(drop=True)
 sample_generator = train_datagen.flow_from_dataframe(
-    sample_df, 
-    cwd + "/dataset/", 
+    sample_df,
+    cwd + "/dataset/",
     x_col="filename",
     y_col="taste",
     target_size=IMAGE_SIZE,
     class_mode="categorical")
 plt.figure(figsize=(12, 12))
 for i in range(0, 9):
-    plt.subplot(3, 3, i+1)
+    plt.subplot(3, 3, i + 1)
     for X_batch, Y_batch in sample_generator:
         image = X_batch[0]
         plt.imshow(image)
@@ -267,6 +267,6 @@ for index, row in sample_test.iterrows():
     img = load_img(cwd + "/dataset/" + filename, target_size=IMAGE_SIZE)
     plt.subplot(5, 5, index + 1)
     plt.imshow(img)
-    plt.xlabel("{}".format(category) + "(" + filename + ")" )
+    plt.xlabel("{}".format(category) + "(" + filename + ")")
 plt.tight_layout()
 plt.show()
