@@ -105,6 +105,23 @@ learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy",
 # 関数の呼び出す
 callbacks = [earlystop, learning_rate_reduction]
 # --------------------------------------------------------------------------------------------
+# 学習、検証とテスト用のデータ準備
+# --------------------------------------------------------------------------------------------
+train_df, validate_df = train_test_split(df, train_size=0.6, random_state=42)
+validate_df, test_df = train_test_split(validate_df, test_size=0.5, random_state=42)
+train_df = train_df.reset_index(drop=True)
+validate_df = validate_df.reset_index(drop=True)
+test_df = test_df.reset_index(drop=True)
+# ～～～デバッグ～～～
+train_df["taste"].value_counts().plot.bar()
+validate_df["taste"].value_counts().plot.bar()
+test_df["taste"].value_counts().plot.bar()
+# ～～～～～～～～～～
+total_train = train_df.shape[0]
+total_validate = validate_df.shape[0]
+total_test = test_df.shape[0]
+batch_size = 15
+# --------------------------------------------------------------------------------------------
 # 解析オプション
 # --------------------------------------------------------------------------------------------
 # 味の選択
@@ -114,17 +131,7 @@ consomme-punch, kyusyu-shoyu, norishio, norishio-punch, shiawase-butter, shoyu-m
 # 選択した味以外、全部0に与える
 new_taste = dict.fromkeys(flavors, 0)
 new_taste.update({analyse: 1})
-# --------------------------------------------------------------------------------------------
-# 学習と検証用のデータ準備
-# --------------------------------------------------------------------------------------------
-train_df, validate_df = train_test_split(df, train_size=0.6, random_state=42)
-validate_df, test_df = train_test_split(validate_df, test_size=0.5, random_state=42)
-# ～～～デバッグ～～～
-train_df["taste"].value_counts().plot.bar()
-validate_df["taste"].value_counts().plot.bar()
-test_df["taste"].value_counts().plot.bar()
-# ～～～～～～～～～～
-# それぞれの _df にデータを入れ換える
+# 学習、検証とテスト用のデータを書き換える
 train_df["taste"] = train_df["taste"].replace(new_taste)
 train_df["taste"] = train_df["taste"].replace({0: "others", 1: analyse})
 validate_df["taste"] = validate_df["taste"].replace(new_taste)
@@ -136,13 +143,6 @@ train_df["taste"].value_counts().plot.bar()
 validate_df["taste"].value_counts().plot.bar()
 test_df["taste"].value_counts().plot.bar()
 # ～～～～～～～～～～
-train_df = train_df.reset_index(drop=True)
-validate_df = validate_df.reset_index(drop=True)
-test_df = test_df.reset_index(drop=True)
-total_train = train_df.shape[0]
-total_validate = validate_df.shape[0]
-total_test = test_df.shape[0]
-batch_size = 15
 # --------------------------------------------------------------------------------------------
 # 学習の仕組み
 # --------------------------------------------------------------------------------------------
