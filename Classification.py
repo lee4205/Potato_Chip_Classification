@@ -25,6 +25,7 @@ pd.set_option("display.max_rows", None)
 # 定数の定義
 # --------------------------------------------------------------------------------------------
 FAST_RUN = False
+# 画像に関する定数
 # 元画像サイズは 960*1280
 IMAGE_WIDTH = 120
 IMAGE_HEIGHT = 160
@@ -123,6 +124,7 @@ train_df["taste"].value_counts().plot.bar()
 validate_df["taste"].value_counts().plot.bar()
 test_df["taste"].value_counts().plot.bar()
 # ～～～～～～～～～～
+# それぞれの _df にデータを入れ換える
 train_df["taste"] = train_df["taste"].replace(new_taste)
 train_df["taste"] = train_df["taste"].replace({0: "others", 1: analyse})
 validate_df["taste"] = validate_df["taste"].replace(new_taste)
