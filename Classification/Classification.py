@@ -32,7 +32,7 @@ for flavor in flavors:
         taste.append(flavor)
         filename.append(image)
     subprocess.run(["cp " + cwd + "/potato-chips/" + flavor + "/*.jpg " + cwd + "/dataset"], shell=True)
-df = pd.DataFrame({"filename" : filename, "taste" : taste})
+df = pd.DataFrame({"filename": filename, "taste": taste})
 
 # ～～～デバッグ～～～
 print(df)
@@ -42,7 +42,8 @@ df["taste"].value_counts().plot.bar()
 
 model = Sequential()
 
-model.add(Conv2D(filters=32, kernel_size=(3, 3), activation="relu", input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
+model.add(
+    Conv2D(filters=32, kernel_size=(3, 3), activation="relu", input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
 model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
@@ -117,7 +118,7 @@ test_df["taste"].value_counts().plot.bar()
 
 train_datagen = ImageDataGenerator(
     rotation_range=15,
-    rescale=1./255,
+    rescale=1. / 255,
     shear_range=0.1,
     zoom_range=0.2,
     horizontal_flip=True,
@@ -126,14 +127,14 @@ train_datagen = ImageDataGenerator(
     height_shift_range=0.1)
 train_generator = train_datagen.flow_from_dataframe(
     train_df,
-    cwd+"/dataset/",
+    cwd + "/dataset/",
     x_col="filename",
     y_col="taste",
     target_size=IMAGE_SIZE,
     class_mode="categorical",
     batch_size=batch_size)
 
-validation_datagen = ImageDataGenerator(rescale=1./255)
+validation_datagen = ImageDataGenerator(rescale=1. / 255)
 validation_generator = validation_datagen.flow_from_dataframe(
     validate_df,
     cwd + "/dataset/",
@@ -143,37 +144,37 @@ validation_generator = validation_datagen.flow_from_dataframe(
     class_mode="categorical",
     batch_size=batch_size)
 
-epochs=10 if FAST_RUN else 50
+epochs = 10 if FAST_RUN else 50
 history = model.fit_generator(
     train_generator,
     epochs=epochs,
     validation_data=validation_generator,
-    validation_steps=total_validate//batch_size,
-    steps_per_epoch=total_train//batch_size,
+    validation_steps=total_validate // batch_size,
+    steps_per_epoch=total_train // batch_size,
     callbacks=callbacks)
 model.save_weights("model.h5")
 
-fig, axs = plt.subplots(1,2,figsize=(15,5))
-axs[0].plot(range(1,len(history.history["accuracy"])+1),history.history["accuracy"])
-axs[0].plot(range(1,len(history.history["val_accuracy"])+1),history.history["val_accuracy"])
+fig, axs = plt.subplots(1, 2, figsize=(15, 5))
+axs[0].plot(range(1, len(history.history["accuracy"]) + 1), history.history["accuracy"])
+axs[0].plot(range(1, len(history.history["val_accuracy"]) + 1), history.history["val_accuracy"])
 axs[0].set_title("Model Accuracy")
 axs[0].set_ylabel("Accuracy")
 axs[0].set_xlabel("Epoch")
-axs[0].set_xticks(np.arange(1,len(history.history["accuracy"])+1),len(history.history["accuracy"])/10)
+axs[0].set_xticks(np.arange(1, len(history.history["accuracy"]) + 1), len(history.history["accuracy"]) / 10)
 axs[0].legend(["train", "val"], loc="best")
-axs[1].plot(range(1,len(history.history["loss"])+1),history.history["loss"])
-axs[1].plot(range(1,len(history.history["val_loss"])+1),history.history["val_loss"])
+axs[1].plot(range(1, len(history.history["loss"]) + 1), history.history["loss"])
+axs[1].plot(range(1, len(history.history["val_loss"]) + 1), history.history["val_loss"])
 axs[1].set_title("Model Loss")
 axs[1].set_ylabel("Loss")
 axs[1].set_xlabel("Epoch")
-axs[1].set_xticks(np.arange(1,len(history.history["loss"])+1),len(history.history["loss"])/10)
+axs[1].set_xticks(np.arange(1, len(history.history["loss"]) + 1), len(history.history["loss"]) / 10)
 axs[1].legend(["train", "val"], loc="best")
 plt.show()
 
-test_datagen = ImageDataGenerator(rescale=1./255)
+test_datagen = ImageDataGenerator(rescale=1. / 255)
 test_generator = test_datagen.flow_from_dataframe(
     test_df,
-    cwd+"/dataset/",
+    cwd + "/dataset/",
     x_col="filename",
     y_col=None,
     class_mode=None,
@@ -181,9 +182,9 @@ test_generator = test_datagen.flow_from_dataframe(
     batch_size=batch_size,
     shuffle=True)
 
-predict = model.predict(test_generator, steps=np.ceil(total_test/batch_size))
+predict = model.predict(test_generator, steps=np.ceil(total_test / batch_size))
 test_df["taste"] = np.argmax(predict, axis=-1)
-label_map = dict((v,k) for k,v in train_generator.class_indices.items())
+label_map = dict((v, k) for k, v in train_generator.class_indices.items())
 test_df["taste"] = test_df["taste"].replace(label_map)
 test_df["taste"].value_counts().plot.bar()
 
@@ -202,7 +203,7 @@ sample_generator = train_datagen.flow_from_dataframe(
     class_mode="categorical")
 plt.figure(figsize=(12, 12))
 for i in range(0, 9):
-    plt.subplot(3, 3, i+1)
+    plt.subplot(3, 3, i + 1)
     for X_batch, Y_batch in sample_generator:
         image = X_batch[0]
         plt.imshow(image)
@@ -219,6 +220,6 @@ for index, row in sample_test.iterrows():
     img = load_img(cwd + "/dataset/" + filename, target_size=IMAGE_SIZE)
     plt.subplot(5, 5, index + 1)
     plt.imshow(img)
-    plt.xlabel("{}".format(category) + "(" + filename + ")" )
+    plt.xlabel("{}".format(category) + "(" + filename + ")")
 plt.tight_layout()
 plt.show()
