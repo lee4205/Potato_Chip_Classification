@@ -62,49 +62,6 @@ print(df.shape)
 df["taste"].value_counts().plot.bar()
 # ～～～～～～～～～～
 # --------------------------------------------------------------------------------------------
-# モデル作成
-# --------------------------------------------------------------------------------------------
-model = Sequential()
-
-model.add(Conv2D(filters=32, kernel_size=(3, 3), activation="relu", input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
-model.add(BatchNormalization())
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-
-model.add(Conv2D(filters=64, kernel_size=(3, 3), activation="relu"))
-model.add(BatchNormalization())
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-
-model.add(Conv2D(filters=128, kernel_size=(3, 3), activation="relu"))
-model.add(BatchNormalization())
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-
-model.add(Flatten())
-model.add(Dense(units=512, activation="relu"))
-model.add(BatchNormalization())
-model.add(Dropout(0.5))
-model.add(Dense(2, activation="softmax"))
-# モデルをまとめる
-model.compile(loss="categorical_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
-# ～～～デバッグ～～～
-model.summary()
-# ～～～～～～～～～～
-# --------------------------------------------------------------------------------------------
-# 過学習の場合
-# --------------------------------------------------------------------------------------------
-# 過学習を防ぐために，10エポック後に学習を停止し，val_lossの値を減らさないようにする
-earlystop = EarlyStopping(patience=10)
-# 2エポック後に精度が上がらない場合，学習率を下げる
-learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy",
-                                            patience=2,
-                                            verbose=1,
-                                            factor=0.3,
-                                            min_lr=0.0001)
-# 関数の呼び出す
-callbacks = [earlystop, learning_rate_reduction]
-# --------------------------------------------------------------------------------------------
 # 学習、検証とテスト用のデータ準備
 # --------------------------------------------------------------------------------------------
 train_df, validate_df = train_test_split(df, train_size=0.6, random_state=42)
@@ -179,6 +136,49 @@ validation_generator = validation_datagen.flow_from_dataframe(
     target_size=IMAGE_SIZE,
     class_mode="categorical",
     batch_size=batch_size)
+# --------------------------------------------------------------------------------------------
+# モデル作成
+# --------------------------------------------------------------------------------------------
+model = Sequential()
+
+model.add(Conv2D(filters=32, kernel_size=(3, 3), activation="relu", input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Conv2D(filters=64, kernel_size=(3, 3), activation="relu"))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Conv2D(filters=128, kernel_size=(3, 3), activation="relu"))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Flatten())
+model.add(Dense(units=512, activation="relu"))
+model.add(BatchNormalization())
+model.add(Dropout(0.5))
+model.add(Dense(2, activation="softmax"))
+# モデルをまとめる
+model.compile(loss="categorical_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
+# ～～～デバッグ～～～
+model.summary()
+# ～～～～～～～～～～
+# --------------------------------------------------------------------------------------------
+# 過学習の場合
+# --------------------------------------------------------------------------------------------
+# 過学習を防ぐために，10エポック後に学習を停止し，val_lossの値を減らさないようにする
+earlystop = EarlyStopping(patience=10)
+# 2エポック後に精度が上がらない場合，学習率を下げる
+learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy",
+                                            patience=2,
+                                            verbose=1,
+                                            factor=0.3,
+                                            min_lr=0.0001)
+# 関数の呼び出す
+callbacks = [earlystop, learning_rate_reduction]
 # --------------------------------------------------------------------------------------------
 # モデルの適合
 # --------------------------------------------------------------------------------------------
