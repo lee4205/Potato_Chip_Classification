@@ -40,43 +40,6 @@ print(df.shape)
 df["taste"].value_counts().plot.bar()
 # ～～～～～～～～～～
 
-model = Sequential()
-
-model.add(Conv2D(filters=32, kernel_size=(3, 3), activation="relu", input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
-model.add(BatchNormalization())
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-
-model.add(Conv2D(filters=64, kernel_size=(3, 3), activation="relu"))
-model.add(BatchNormalization())
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-
-model.add(Conv2D(filters=128, kernel_size=(3, 3), activation="relu"))
-model.add(BatchNormalization())
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-
-model.add(Flatten())
-model.add(Dense(units=512, activation="relu"))
-model.add(BatchNormalization())
-model.add(Dropout(0.5))
-model.add(Dense(2, activation="softmax"))
-
-model.compile(loss="categorical_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
-
-# ～～～デバッグ～～～
-model.summary()
-# ～～～～～～～～～～
-
-earlystop = EarlyStopping(patience=10)
-learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy",
-                                            patience=2,
-                                            verbose=1,
-                                            factor=0.3,
-                                            min_lr=0.0001)
-callbacks = [earlystop, learning_rate_reduction]
-
 train_df, validate_df = train_test_split(df, train_size=0.6, random_state=42)
 validate_df, test_df = train_test_split(validate_df, test_size=0.5, random_state=42)
 train_df = train_df.reset_index(drop=True)
@@ -141,6 +104,43 @@ validation_generator = validation_datagen.flow_from_dataframe(
     target_size=IMAGE_SIZE,
     class_mode="categorical",
     batch_size=batch_size)
+
+model = Sequential()
+
+model.add(Conv2D(filters=32, kernel_size=(3, 3), activation="relu", input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Conv2D(filters=64, kernel_size=(3, 3), activation="relu"))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Conv2D(filters=128, kernel_size=(3, 3), activation="relu"))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Flatten())
+model.add(Dense(units=512, activation="relu"))
+model.add(BatchNormalization())
+model.add(Dropout(0.5))
+model.add(Dense(2, activation="softmax"))
+
+model.compile(loss="categorical_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
+
+# ～～～デバッグ～～～
+model.summary()
+# ～～～～～～～～～～
+
+earlystop = EarlyStopping(patience=10)
+learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy",
+                                            patience=2,
+                                            verbose=1,
+                                            factor=0.3,
+                                            min_lr=0.0001)
+callbacks = [earlystop, learning_rate_reduction]
 
 epochs = 10 if FAST_RUN else 50
 history = model.fit_generator(
