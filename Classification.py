@@ -68,7 +68,6 @@ test_df = test_df.reset_index(drop=True)
 # sns.countplot(validate_df['flavor'])
 # sns.countplot(test_df['flavor'])
 
-
 y_train = train_df['flavor']
 y_validate = validate_df['flavor']
 y_test = test_df['flavor']
@@ -167,12 +166,7 @@ axs[1].legend(["train", "val"], loc="best")
 plt.show()
 
 predictions = model.predict_classes(x_test)
-for i in range(len(predictions)):
-    if predictions[i] >= 9:
-        predictions[i] += 1
-
-# デバッグ用
-# print(predictions)
+print(predictions)
 
 classes = ["Class " + str(i) for i in range(8) if i != 0]
 print(classification_report(y, predictions, target_names=classes))
@@ -183,6 +177,7 @@ plt.figure(figsize=(10, 10))
 sns.heatmap(cm, cmap="Blues", linecolor='black', linewidth=1, annot=True, fmt='')
 
 correct = (predictions == y).to_numpy().nonzero()[0]
+
 i = 0
 plt.figure(figsize=(10, 10))
 for c in correct[:9]:
