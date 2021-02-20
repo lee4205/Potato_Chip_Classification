@@ -170,11 +170,11 @@ plt.show()
 predictions = model.predict_classes(x_test)
 print(predictions)
 
-classes = ["Class " + str(i) for i in range(7)]
+classes = flavors
 print(classification_report(y, predictions, target_names = classes))
 
 cm = confusion_matrix(y, predictions)
-cm = pd.DataFrame(cm, index=[i for i in range(7)], columns=[i for i in range(7)])
+cm = pd.DataFrame(cm, index=flavors, columns=flavors)
 plt.figure(figsize=(10, 10))
 sns.heatmap(cm, cmap="Blues", linecolor='black', linewidth=1, annot=True, fmt='')
 
