@@ -142,11 +142,13 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 model.summary()
 
 history = model.fit(datagen.flow(x_train, y_train, batch_size=5),
-                    epochs=500,
+                    epochs=1200,
                     validation_data=(x_validate, y_validate),
                     callbacks=[learning_rate_reduction])
 
 print("Accuracy of the model : ", model.evaluate(x_validate, y_validate)[1] * 100, "%")
+
+model.save_weights("model.h5")
 
 fig, axs = plt.subplots(1, 2, figsize=(15, 5))
 axs[0].plot(range(1, len(history.history["accuracy"]) + 1), history.history["accuracy"])
@@ -168,11 +170,11 @@ plt.show()
 predictions = model.predict_classes(x_test)
 print(predictions)
 
-classes = ["Class " + str(i) for i in range(8) if i != 0]
-print(classification_report(y, predictions, target_names=classes))
+classes = ["Class " + str(i) for i in range(7)]
+print(classification_report(y, predictions, target_names = classes))
 
 cm = confusion_matrix(y, predictions)
-cm = pd.DataFrame(cm, index=[i for i in range(8) if i != 0], columns=[i for i in range(8) if i != 0])
+cm = pd.DataFrame(cm, index=[i for i in range(7)], columns=[i for i in range(7)])
 plt.figure(figsize=(10, 10))
 sns.heatmap(cm, cmap="Blues", linecolor='black', linewidth=1, annot=True, fmt='')
 
@@ -182,6 +184,6 @@ i = 0
 plt.figure(figsize=(10, 10))
 for c in correct[:9]:
     plt.subplot(3, 3, i + 1)
-    plt.imshow(x_test[c].reshape(image_height, image_width), cmap="gray", interpolation='none')
-    plt.title("Predicted Class {}, Actual Class {}".format(flavors[predictions[c]], flavors[y[c]]))
+    plt.imshow(x_test[c].reshape(image_height, image_width), interpolation='none')
+    plt.title("Predicted Class {}\n Actual Class {}".format(flavors[predictions[c]], flavors[y[c]]))
     i += 1
