@@ -209,6 +209,7 @@ for i in range(0, 9):
 plt.tight_layout()
 plt.show()
 
+
 sample_test = test_df.head(25)
 sample_test.head()
 plt.figure(figsize=(24, 24))
